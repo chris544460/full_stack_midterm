@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Penny.com</title>
+      <link rel="stylesheet" href="static/index.css">
+   </head>
+
+   <body>
+
+      <h1>City Search</h1>
+
+      <!-- display the current time like The current time is 10/25/2022 2:09:54 PM in your location -->
+        <p> The current time is <span id="datetimeSpan"></span> at <span id="location"></span> </p>
+
+
+
+      Search City Name
+      <!-- There must be a search box (an HTML `<input>` element with ID `cityInput`) -->
+      <div class="content">
+        <div class="searchbar">
+           <h1>City Search</h1>
+           <span>City Name</span>
+           <input type="text" id="cityInput" autoFocus>   
+        </div>
+        <div class="results">
+           <div id="resultsParagraph"></div>
+        </div>
+     </div>
+
+
+      <script src=
+"https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js">
+      </script>
+
+      <!-- <script src="static/jquery.min.js"></script> -->
+
+      <script>
+
+         'use strict';
+
+        // function to get "morning" or "afternoon"
+         function getAmPm()
+         {
+            let dateTime = new Date();
+            let hours = dateTime.getHours();
+            let amPm = 'morning';
+            if (hours >= 12)
+               amPm = 'afternoon';
+            $('#ampmSpan').html(amPm);
+         }
+
+        // function to get the current date and time given a timezone
+         function getDateTime()
+         {
+
+            let new_time_zone = $(this).find('td').eq(2).html();
+            let dateTime = new Date();
+            $('#datetimeSpan').html(dateTime.toLocaleString('en-US', {timeZone: new_time_zone}));
+         }
+
+
+        // function to update the results paragraph
+         function handleResponse(response)
+         {
+            let inner = '';
+            if (response !== '') inner = "<hr>" + response;
+            $('#resultsParagraph').html(inner);
+         }
+
+        //  function to get the results from the server
+         let request = null; // global variable to hold the request object
+         function getResults()
+         {
+            // get the city name from the input box
+            let city = $('#cityInput').val();
+            city = encodeURIComponent(city);
+            let url = '/searchresults?city=' + city
+
+            if (request != null)
+               request.abort();
+
+            request = $.ajax(
+               {
+                  type: 'GET',
+                  url: url,
+                  success: handleResponse
+               }
+            );
+         }
+
+        //  function to set up the page
+         function setup()
+         {
+            // make #location be "your location" by default
+            $('#location').html("your location");
+            // make #datetimeSpan be the current date and time
+            $('#datetimeSpan').html(new Date().toLocaleString());
+
+            // choose between "morning" and "afternoon"
+            getAmPm();
+            window.setInterval(getAmPm, 1000); // update every second without refreshing the page or making a new request
+
+
+            // change the date and time when the user clicks on a row (either the default row or a row from the search results)
+            var selectedTimezone = null;
+            window.setInterval(function() {
+                if (selectedTimezone) {
+                $('#datetimeSpan').html(new Date().toLocaleString('en-US', { timeZone: selectedTimezone }));
+                } else {
+                $('#datetimeSpan').html(new Date().toLocaleString());
+                }
+            }, 1000);
+
+            // get the results when the user types in the search box
+            $('#cityInput').on('input', getResults);
+
+
+            // select a row when the user clicks on it
+            $('body').on('click', 'tr', function () {
+                // unselect all rows
+                $('tbody tr').removeClass('selected');
+                // select the clicked row
+                $(this).addClass('selected');
+
+                // get the city name and timezone from the clicked row
+                let newCity = $(this).find('td').eq(0).html();
+                console.log(newCity);
+                let newTimezone = $(this).find('td').eq(2).html();
+                console.log(newTimezone);
+                
+                // update the location and datetime elements
+                $('#location').html(newCity);
+                $('#datetimeSpan').html(new Date().toLocaleString('en-US', { timeZone: newTimezone }));
+                // update the selectedTimezone variable
+                selectedTimezone = newTimezone;
+            });
+
+            
+         }
+
+         $('document').ready(setup);
+
+      </script>
+   </body>
+</html>

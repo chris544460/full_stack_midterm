@@ -1,0 +1,21 @@
+body {
+    font-family: sans-serif;
+  }
+  
+  table {
+    border-collapse: collapse;
+    margin: 10px;
+  }
+  
+  table tbody tr:hover {
+    border: 1px solid black;
+    border-radius: 5px;
+    /* Ensure that the border doesn't overlap with the background */
+    overflow: hidden;
+  }
+  
+  table tbody tr.selected {
+    background-color: lightgray;
+    border-radius: 5px;
+  }
+  
