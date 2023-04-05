@@ -1,0 +1,2 @@
+# ignore geonames.sqlite and penny.sqlite
+git rm --cached geonames.sqlite penny.sqlite
