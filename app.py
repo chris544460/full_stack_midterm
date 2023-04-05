@@ -35,14 +35,6 @@ def search_results():
 
     cities = search(city)  # Exception handling omitted
 
-    # html = ''
-    # pattern = '<strong>%s</strong>: %s ($%.2f)<br>'
-    # for city in cities:
-    #     html += pattern % city.to_tuple()
-
-    # response = make_response(html)
-    # return response
-
     html = '''
     <table>
     <thead>
